@@ -34,7 +34,7 @@ def select_interval(df, selection):
 
 # calculate log returns for dataframe
 def calcLogreturns(df):
-    returns = df.pct_change(1, fill_method=None)
+    returns = df.pct_change(1, fill_method=None) # np.log(df.pct_change(1, fill_method=None)+1).replace
     return returns
 
 def get_Total_NaN_of_df(df, having=False):
