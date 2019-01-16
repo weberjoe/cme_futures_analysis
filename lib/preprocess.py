@@ -15,16 +15,16 @@ def clean(df):
     # remove whitespace from cols
     df.columns = df.columns.str.replace(' ', '')
     df.columns = df.columns.str.replace('CHRIS/', '')
+    
     #calculate log returns
     df = calcLogreturns(df)
-    # original size
-    print("raw: ", df.shape)
+    
     # only nan cols
     nullcolumns = df.isnull().all()
-    print("futures containing only nan: ", nullcolumns.sum())
+    
     # remove nan cols
     df = df.dropna(axis=1, how='all')
-    print("cleaned: ", df.shape)
+    
     return df
 
 # choose interval in df with least nan values
@@ -34,7 +34,7 @@ def select_interval(df, selection):
 
 # calculate log returns for dataframe
 def calcLogreturns(df):
-    returns = df.pct_change(1, fill_method=None) # np.log(df.pct_change(1, fill_method=None)+1).replace
+    returns = df.pct_change(1, fill_method=None)
     return returns
 
 def get_Total_NaN_of_df(df, having=False):
@@ -57,3 +57,34 @@ def missingValues(df, from_=0, percentage=False):
     plt.ylabel('percentage of nan values')
     plt.show()
     print("NaNs in df: ", get_Total_NaN_of_df(df))
+        
+def exchange_counter():
+    from collections import Counter
+    path="./data/"
+    chris_meta=pd.read_csv(path+"CHRIS_metadata.csv") # loading data
+    exchange=chris_meta["code"]                       # extracting code column 
+    first_three_letters = exchange.str[:3]            # extracting first three columns of exchange
+    # display(first_three_letters)
+    counts = Counter(first_three_letters)
+
+    labels, values = zip(*counts.items())
+    indexes = np.arange(len(labels))
+    width = 1
+    plt.figure(1,(15,8))
+    plt.bar(indexes, values, width)
+    plt.xticks(indexes, labels)
+    plt.xlabel("Exchange Code")
+    plt.ylabel("Number of Futures")
+    plt.show()
+
+def summarise_CME():
+    import quandl
+    API_KEY_JOE="16-3ue4hzwtKNj3DSFYY"
+    quandl.ApiConfig.api_key=API_KEY_JOE
+    df_sample_futures = quandl.get("CHRIS/CME_B630", collapse="daily")
+    path="./data/"
+    all_CME = pd.read_csv(path+"CME_futures_all.csv", index_col=0)
+    column_names=pd.DataFrame(list(df_sample_futures),columns=["CME Variables"])
+    display(column_names)
+    print("Number of Days in CME Dataset: ", all_CME.shape[:-1],"\n")
+    print("Number of Futures in CME Dataset: ", all_CME.shape[-1:])

@@ -29,11 +29,13 @@ def cos_similarities(df):
 
 
 # plotting cosine similarities
-def plot_cos_similarity(similarity):
-    colour=[]
-    for i in range(similarities.shape[-1]):
-        colour.append('b')
-    plt.hist(similarities,bins=50,color=colour,lw=0)
+def plot_cos_similarity(similarities):
+    similarities_plot=similarities.copy()
+    similarities_plot=np.asarray(similarities_plot)
+    similarities_plot=similarities_plot.ravel()
+    #display(similarities_plot)
+    plt.figure(figsize=(16,10))
+    plt.hist(similarities_plot,bins=50,color='b')
     plt.xlabel("Cosine Similarity")
     plt.ylabel("Frequency")
     
@@ -44,7 +46,7 @@ def louvain_without_threshold(similarities):
     nodes_to_keep = np.nonzero(node_degrees)[0]             # in the graph that are not connected to anything
     adjacency = adjacency[nodes_to_keep,:][:,nodes_to_keep]
     G=nx.from_numpy_matrix(adjacency)
-    partition=community.best_partition(graph=G, random_state=1)
+    partition=community.best_partition(graph=G)#, random_state=1)
     """size = float(len(set(partition.values())))
     pos = nx.spring_layout(G)
     count = 0.
@@ -67,12 +69,12 @@ def louvain_with_threshold(similarities):
     nodes_to_keep = np.nonzero(node_degrees)[0]             # in the graph that are not connected to anything
     adjacency = adjacency[nodes_to_keep,:][:,nodes_to_keep]
     G=nx.from_numpy_matrix(adjacency)
-    partition=community.best_partition(graph=G)#random_state=1)
+    partition=community.best_partition(graph=G)#, random_state=1)
 
     size = float(len(set(partition.values())))
     pos = nx.spring_layout(G)
     count = 0.
-    plt.figure(2,figsize=(10,8))
+    plt.figure(2,figsize=(15,12))
     for com in set(partition.values()):
         count += 1.
         list_nodes = [nodes for nodes in partition.keys()
@@ -94,6 +96,6 @@ def louvain_ret_part(similarities):
     nodes_to_keep = np.nonzero(node_degrees)[0]             # in the graph that are not connected to anything
     adjacency = adjacency[nodes_to_keep,:][:,nodes_to_keep]
     G=nx.from_numpy_matrix(adjacency)
-    partition=community.best_partition(graph=G)#, random_state=1)
+    partition=community.best_partition(graph=G) # random_state=1)
     return partition
 
